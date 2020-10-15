@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import study.querydsl.entity.Member;
+import study.querydsl.entity.QMember;
 import study.querydsl.entity.Team;
 
 import javax.persistence.EntityManager;
@@ -69,6 +70,34 @@ public class QuerydslBasicTest {
                 .from(member)
                 .where(member.username.eq("member1")) // 파라미터 바인딩 처리
                 .fetchOne();
+
+        //then
+        assertThat(findMember != null ? findMember.getUsername() : null).isEqualTo("member1");
+    }
+
+    @Test
+    public void 검색_조건_쿼리() throws Exception {
+        //given
+        Member findMember = queryFactory.selectFrom(member)
+                .where(member.username.eq("member1")
+                        .and(member.age.eq(10)))
+                .fetchOne();
+
+        //when
+
+        //then
+        assertThat(findMember != null ? findMember.getUsername() : null).isEqualTo("member1");
+    }
+
+    @Test
+    public void 검색_조건_쿼리_andParam() throws Exception {
+        //given
+        Member findMember = queryFactory.selectFrom(member)
+                .where(member.username.eq("member1"), (member.age.eq(10)))
+                // , 도 and 조건으로 들어간다. 이 방법은 중간에 null 들어가면 무시한다. 동적 쿼리를 생성할 때 좋다.
+                .fetchOne();
+
+        //when
 
         //then
         assertThat(findMember != null ? findMember.getUsername() : null).isEqualTo("member1");
