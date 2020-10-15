@@ -1,19 +1,18 @@
 package study.querydsl;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import study.querydsl.entity.Member;
-import study.querydsl.entity.QMember;
 import study.querydsl.entity.Team;
 
 import javax.persistence.EntityManager;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static study.querydsl.entity.QMember.*;
 
 @SpringBootTest
 @Transactional
@@ -63,16 +62,16 @@ public class QuerydslBasicTest {
     @Test
     public void startQueryDsl() throws Exception {
         //given
-        QMember qMember = new QMember("m");
 
         //when
-        Member member = queryFactory.select(qMember)
-                .from(qMember)
-                .where(qMember.username.eq("member1")) // 파라미터 바인딩 처리
+        Member findMember = queryFactory
+                .select(member)
+                .from(member)
+                .where(member.username.eq("member1")) // 파라미터 바인딩 처리
                 .fetchOne();
 
         //then
-        assertThat(member != null ? member.getUsername() : null).isEqualTo("member1");
+        assertThat(findMember != null ? findMember.getUsername() : null).isEqualTo("member1");
     }
 
 }

@@ -14,6 +14,7 @@ spring:
       hibernate:
 #        show_sql: true
         format_sql: true
+        use_sql_comments: true # JPQL 실행 문을 로그에서 주석형태로 볼 수 있다.
 
 logging.level:
   org.hibernate.SQL: debug
