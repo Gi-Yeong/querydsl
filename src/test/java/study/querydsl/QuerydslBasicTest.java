@@ -12,11 +12,10 @@ import study.querydsl.entity.QMember;
 import study.querydsl.entity.Team;
 
 import javax.persistence.EntityManager;
-
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static study.querydsl.entity.QMember.*;
+import static study.querydsl.entity.QMember.member;
 
 @SpringBootTest
 @Transactional
@@ -161,6 +160,40 @@ public class QuerydslBasicTest {
         assertThat(member5.getUsername()).isEqualTo("member5");
         assertThat(member6.getUsername()).isEqualTo("member6");
         assertThat(membernull.getUsername()).isNull();
+    }
+
+
+    @Test
+    public void 페이징() throws Exception {
+        //given
+        List<Member> result = queryFactory.selectFrom(member)
+                .orderBy(member.username.desc())
+                .offset(1)
+                .limit(2)
+                .fetch();
+
+        //when
+
+        //then
+        assertThat(result.size()).isEqualTo(2);
+    }
+
+    @Test
+    public void 전체조회수필요경우() throws Exception {
+        //given
+        QueryResults<Member> results = queryFactory.selectFrom(member)
+                .orderBy(member.username.desc())
+                .offset(1)
+                .limit(2)
+                .fetchResults();
+
+        //when
+
+        //then
+        assertThat(results.getTotal()).isEqualTo(4);
+        assertThat(results.getLimit()).isEqualTo(2);
+        assertThat(results.getOffset()).isEqualTo(1);
+        assertThat(results.getResults().size()).isEqualTo(2);
     }
 
 
