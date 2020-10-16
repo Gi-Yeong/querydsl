@@ -232,7 +232,7 @@ public class QuerydslBasicTest {
                 .from(member)
                 .join(member.team, team)
                 .groupBy(team.name)
-                .having(member.age.avg().gt(10))
+                .having(member.age.avg().gt(10)) // having 은 항상 group by 뒤에 와야 하고, group by 된 후 조건을 걸 때 쓴다.
                 .fetch();
 
         //when
@@ -246,6 +246,47 @@ public class QuerydslBasicTest {
         assertThat(teamB.get(team.name)).isEqualTo("teamB");
         assertThat(teamB.get(member.age.avg())).isEqualTo(35); // (30 + 40) / 2
 
+    }
+
+    /**
+     * 팀 A에 소속된 모든 회원
+     */
+    @Test
+    public void join() throws Exception {
+        //given
+        List<Member> result = queryFactory.selectFrom(member)
+                .join(member.team, team)
+                .where(team.name.eq("teamA"))
+                .fetch();
+
+        //when
+
+        //then
+        assertThat(result).extracting("username")
+                .containsExactly("member1", "member2");
+    }
+
+    /**
+     * 세타 조인
+     * 회원의 이름이 팀 이름과 같은 회원 조회
+     */
+    @Test
+    public void theta_join() throws Exception {
+        //given
+        em.persist(new Member("teamA"));
+        em.persist(new Member("teamB"));
+        em.persist(new Member("teamC"));
+
+        //when
+        List<Member> result = queryFactory.select(member)
+                .from(member, team)
+                .where(member.username.eq(team.name))
+                .fetch();
+
+        //then
+        assertThat(result)
+                .extracting("username")
+                .containsExactly("teamA", "teamB");
     }
 
 }
