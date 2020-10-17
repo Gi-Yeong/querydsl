@@ -13,6 +13,8 @@ import study.querydsl.entity.QMember;
 import study.querydsl.entity.Team;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceUnit;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -333,4 +335,43 @@ public class QuerydslBasicTest {
             System.out.println("tuple = " + tuple);
         }
     }
+
+    @PersistenceUnit
+    EntityManagerFactory emf;
+
+    @Test
+    public void fetchJoinNo() throws Exception {
+        //given
+        em.flush();
+        em.clear();
+
+        Member findMember = queryFactory.selectFrom(QMember.member)
+                .where(QMember.member.username.eq("member1"))
+                .fetchOne();
+
+        //when
+        boolean loaded = emf.getPersistenceUnitUtil().isLoaded(findMember.getTeam());
+
+        //then
+        assertThat(loaded).as("패치 조인 미적용").isFalse();
+    }
+
+    @Test
+    public void fetchJoin() throws Exception {
+        //given
+        em.flush();
+        em.clear();
+
+        Member findMember = queryFactory.selectFrom(QMember.member)
+                .join(member.team, team).fetchJoin()
+                .where(QMember.member.username.eq("member1"))
+                .fetchOne();
+
+        //when
+        boolean loaded = emf.getPersistenceUnitUtil().isLoaded(findMember.getTeam());
+
+        //then
+        assertThat(loaded).as("패치 조인 미적용").isTrue();
+    }
+
 }
