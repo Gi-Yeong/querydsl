@@ -15,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
 import study.querydsl.dto.MemberDto;
 import study.querydsl.dto.QMemberDto;
@@ -750,5 +751,59 @@ public class QuerydslBasicTest {
     private BooleanExpression allEq(String usernameCond, Integer ageCond) {
         return usernameEq(usernameCond).and(ageEq(ageCond));
     }
+
+    @Test
+    @Commit
+    public void bulkUpdate() throws Exception {
+        //given
+
+        // member1 = 10 -> 비회원
+        // member2 = 20 -> 비회원
+        // member3 = 30 -> 유지
+        // member4 = 40 -> 유지
+
+        long count = queryFactory.update(member)
+                .set(member.username, "비회원")
+                .where(member.age.lt(28))
+                .execute();
+
+        // 벌크 연산을 수행 후, 항상 영속성 컨텍스트를 초기화 해주어야 한다.
+        // 아래에서 Select 를 해도 영속성 컨텍스트에 같은 키를 가진 데이터가 있다면,
+        // 영속성 컨텍스트의 데이터가 우선순위를 갖고 DB 에서 가져온 값을 버린다.
+        em.flush();
+        em.clear();
+
+        List<Member> result = queryFactory.selectFrom(member)
+                .fetch();
+
+        for (Member member1 : result) {
+            System.out.println("member1 = " + member1);
+        }
+
+        //then
+        assertThat(count).isEqualTo(2);
+    }
+
+    @Test
+    public void bulkAdd() throws Exception {
+        //given
+        queryFactory.update(member)
+                .set(member.age, member.age.multiply(2))
+//                .set(member.age, member.age.add(1))
+                .execute();
+
+    }
+
+    @Test
+    public void bulkDelete() throws Exception {
+        //given
+        queryFactory.delete(member)
+                .where(member.age.gt(18))
+                .execute();
+        //when
+
+        //then
+    }
+
 
 }
