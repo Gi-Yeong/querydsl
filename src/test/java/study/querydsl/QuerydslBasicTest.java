@@ -613,7 +613,7 @@ public class QuerydslBasicTest {
         }
     }
 
-    // 프로퍼티 접근 방법
+    // 프로퍼티 접근 방법, setter 를 열어줘야 한다.
     @Test
     public void findDtoBySetter() throws Exception {
         //given
