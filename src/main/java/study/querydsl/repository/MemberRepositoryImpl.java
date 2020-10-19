@@ -39,7 +39,7 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
                 .where(usernameEq(condition.getUsername()),
                         teamNameEq(condition.getTeamName()),
                         ageGoe(condition.getAgeGoe()),
-                        getLoe(condition.getAgeLoe()))
+                        ageLog(condition.getAgeLoe()))
                 .fetch();
     }
 
@@ -57,7 +57,7 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
                 .where(usernameEq(condition.getUsername()),
                         teamNameEq(condition.getTeamName()),
                         ageGoe(condition.getAgeGoe()),
-                        getLoe(condition.getAgeLoe())
+                        ageLog(condition.getAgeLoe())
                 ).offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetchResults();
@@ -82,7 +82,7 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
                 .where(usernameEq(condition.getUsername()),
                         teamNameEq(condition.getTeamName()),
                         ageGoe(condition.getAgeGoe()),
-                        getLoe(condition.getAgeLoe())
+                        ageLog(condition.getAgeLoe())
                 ).offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -95,7 +95,7 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
                 .where(usernameEq(condition.getUsername()),
                         teamNameEq(condition.getTeamName()),
                         ageGoe(condition.getAgeGoe()),
-                        getLoe(condition.getAgeLoe())
+                        ageLog(condition.getAgeLoe())
                 );
 
         // -스프링 데이터 라이브러리가 제공
@@ -118,7 +118,7 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
         return ageGoe != null ? member.age.goe(ageGoe) : null;
     }
 
-    private BooleanExpression getLoe(Integer ageLoe) {
+    private BooleanExpression ageLog(Integer ageLoe) {
         return ageLoe != null ? member.age.loe(ageLoe) : null;
     }
 }
